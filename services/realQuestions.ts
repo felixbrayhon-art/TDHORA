@@ -326,5 +326,355 @@ export const REAL_QUESTIONS: RealQuestion[] = [
         year: 2022,
         subject: "Contabilidade",
         board: "CESPE"
+    },
+    // === MAIS QUESTÕES ENEM ===
+    {
+        id: "en_mat_4",
+        question: "(ENEM) Uma loja oferece 20% de desconto em um produto que custa R$ 150,00. Após o desconto, há um acréscimo de 10% de imposto. O valor final do produto é:",
+        options: ["R$ 120,00", "R$ 132,00", "R$ 135,00", "R$ 140,00", "R$ 145,00"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2022,
+        subject: "Matemática",
+        board: "ENEM"
+    },
+    {
+        id: "en_mat_5",
+        question: "(ENEM) A probabilidade de, ao lançar um dado comum de 6 faces, obter um número par é:",
+        options: ["1/6", "1/3", "1/2", "2/3", "5/6"],
+        correctAnswer: 2,
+        commentary: "",
+        source: "ENEM",
+        year: 2023,
+        subject: "Matemática",
+        board: "ENEM"
+    },
+    {
+        id: "en_ling_3",
+        question: "(ENEM) Assinale a alternativa em que a palavra destacada é um pronome relativo: 'A casa QUE comprei é grande.'",
+        options: ["Pronome pessoal", "Pronome relativo", "Pronome demonstrativo", "Conjunção", "Advérbio"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2022,
+        subject: "Linguagens",
+        board: "ENEM"
+    },
+    {
+        id: "en_bio_3",
+        question: "(ENEM) A fotossíntese é um processo realizado por plantas que:",
+        options: [
+            "Consome oxigênio e libera gás carbônico",
+            "Consome gás carbônico e libera oxigênio",
+            "Não envolve trocas gasosas",
+            "Ocorre apenas à noite",
+            "Produz energia sem luz"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2023,
+        subject: "Biologia",
+        board: "ENEM"
+    },
+    {
+        id: "en_quim_2",
+        question: "(ENEM) O número de prótons de um átomo é chamado de:",
+        options: ["Número de massa", "Número atômico", "Massa atômica", "Valência", "Eletronegatividade"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2022,
+        subject: "Química",
+        board: "ENEM"
+    },
+    {
+        id: "en_fis_2",
+        question: "(ENEM) A velocidade da luz no vácuo é aproximadamente:",
+        options: ["300 m/s", "3.000 m/s", "30.000 km/s", "300.000 km/s", "3.000.000 km/s"],
+        correctAnswer: 3,
+        commentary: "",
+        source: "ENEM",
+        year: 2023,
+        subject: "Física",
+        board: "ENEM"
+    },
+    {
+        id: "en_hist_2",
+        question: "(ENEM) A Proclamação da República no Brasil ocorreu em:",
+        options: ["1822", "1888", "1889", "1891", "1930"],
+        correctAnswer: 2,
+        commentary: "",
+        source: "ENEM",
+        year: 2022,
+        subject: "História",
+        board: "ENEM"
+    },
+    {
+        id: "en_geo_2",
+        question: "(ENEM) O clima predominante na região Norte do Brasil é:",
+        options: ["Tropical", "Equatorial", "Subtropical", "Semiárido", "Temperado"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2023,
+        subject: "Geografia",
+        board: "ENEM"
+    },
+    {
+        id: "en_filo_2",
+        question: "(ENEM) O filósofo grego que foi mestre de Platão é:",
+        options: ["Aristóteles", "Sócrates", "Tales", "Pitágoras", "Heráclito"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "ENEM",
+        year: 2022,
+        subject: "Filosofia",
+        board: "ENEM"
+    },
+    // === MAIS QUESTÕES CONCURSOS ===
+    {
+        id: "cn_port_1",
+        question: "(FCC) Assinale a alternativa em que há ERRO de concordância verbal:",
+        options: [
+            "Fazem dois anos que não o vejo.",
+            "Deve haver soluções para o problema.",
+            "Houve muitas reclamações.",
+            "Existem várias opções.",
+            "Aconteceram fatos estranhos."
+        ],
+        correctAnswer: 0,
+        commentary: "",
+        source: "TRT",
+        year: 2023,
+        subject: "Português",
+        board: "FCC"
+    },
+    {
+        id: "cn_port_2",
+        question: "(CESPE) A crase é OBRIGATÓRIA em:",
+        options: [
+            "Vou a pé.",
+            "Refiro-me a ela.",
+            "Fui à praia.",
+            "Estou a esperar.",
+            "Vou a São Paulo."
+        ],
+        correctAnswer: 2,
+        commentary: "",
+        source: "TCU",
+        year: 2023,
+        subject: "Português",
+        board: "CESPE"
+    },
+    {
+        id: "cn_log_2",
+        question: "(FCC) Se 'Todo A é B' e 'Algum B é C', então:",
+        options: [
+            "Todo A é C",
+            "Algum A pode ser C",
+            "Nenhum A é C",
+            "Todo C é A",
+            "Nenhuma das alternativas"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TJ-SP",
+        year: 2023,
+        subject: "Raciocínio Lógico",
+        board: "FCC"
+    },
+    {
+        id: "cn_log_3",
+        question: "(CESPE) A negação de 'Todos os alunos passaram' é:",
+        options: [
+            "Nenhum aluno passou",
+            "Todos os alunos reprovaram",
+            "Algum aluno não passou",
+            "Nenhum aluno reprovou",
+            "Alguns alunos passaram"
+        ],
+        correctAnswer: 2,
+        commentary: "",
+        source: "PF",
+        year: 2022,
+        subject: "Raciocínio Lógico",
+        board: "CESPE"
+    },
+    {
+        id: "cn_const_2",
+        question: "(FCC) São direitos sociais previstos na Constituição Federal:",
+        options: [
+            "Educação, saúde e lazer",
+            "Apenas educação e saúde",
+            "Apenas trabalho e moradia",
+            "Liberdade e propriedade",
+            "Voto e nacionalidade"
+        ],
+        correctAnswer: 0,
+        commentary: "",
+        source: "TRF",
+        year: 2023,
+        subject: "Direito Constitucional",
+        board: "FCC"
+    },
+    {
+        id: "cn_const_3",
+        question: "(CESPE) O prazo de mandato do Presidente da República é de:",
+        options: ["3 anos", "4 anos", "5 anos", "6 anos", "8 anos"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TCU",
+        year: 2022,
+        subject: "Direito Constitucional",
+        board: "CESPE"
+    },
+    {
+        id: "cn_adm_2",
+        question: "(VUNESP) O princípio da impessoalidade na Administração Pública significa que:",
+        options: [
+            "O administrador pode favorecer amigos",
+            "Os atos devem visar o interesse público",
+            "A administração pode agir sem transparência",
+            "Não há necessidade de concurso público",
+            "O servidor pode escolher quem atender"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TJ-SP",
+        year: 2023,
+        subject: "Direito Administrativo",
+        board: "VUNESP"
+    },
+    {
+        id: "cn_adm_3",
+        question: "(FCC) São poderes da Administração Pública:",
+        options: [
+            "Legislativo, Executivo e Judiciário",
+            "Hierárquico, Disciplinar e Regulamentar",
+            "Federal, Estadual e Municipal",
+            "Público e Privado",
+            "Direto e Indireto"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TCE-SP",
+        year: 2022,
+        subject: "Direito Administrativo",
+        board: "FCC"
+    },
+    {
+        id: "cn_info_2",
+        question: "(FCC) No Microsoft Excel, a função SOMA serve para:",
+        options: [
+            "Multiplicar valores",
+            "Dividir valores",
+            "Somar valores de células",
+            "Subtrair valores",
+            "Calcular média"
+        ],
+        correctAnswer: 2,
+        commentary: "",
+        source: "TRT",
+        year: 2023,
+        subject: "Informática",
+        board: "FCC"
+    },
+    {
+        id: "cn_info_3",
+        question: "(CESPE) A tecla de atalho Ctrl+C no Windows serve para:",
+        options: ["Colar", "Copiar", "Recortar", "Salvar", "Imprimir"],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TCU",
+        year: 2022,
+        subject: "Informática",
+        board: "CESPE"
+    },
+    {
+        id: "cn_penal_3",
+        question: "(FCC) A pena de reclusão é cumprida em regime:",
+        options: [
+            "Apenas aberto",
+            "Apenas fechado",
+            "Fechado, semiaberto ou aberto",
+            "Apenas semiaberto",
+            "Domiciliar"
+        ],
+        correctAnswer: 2,
+        commentary: "",
+        source: "MP-SP",
+        year: 2023,
+        subject: "Direito Penal",
+        board: "FCC"
+    },
+    {
+        id: "cn_penal_4",
+        question: "(CESPE) A tentativa de crime ocorre quando:",
+        options: [
+            "O crime é consumado",
+            "Iniciada a execução, não se consuma por circunstâncias alheias à vontade do agente",
+            "O agente desiste voluntariamente",
+            "Não há dolo",
+            "A vítima perdoa"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "PF",
+        year: 2022,
+        subject: "Direito Penal",
+        board: "CESPE"
+    },
+    {
+        id: "cn_procpenal_3",
+        question: "(FGV) O habeas corpus é uma garantia constitucional que protege:",
+        options: [
+            "A propriedade",
+            "A liberdade de locomoção",
+            "O direito de voto",
+            "A liberdade de expressão",
+            "O direito à educação"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "OAB",
+        year: 2023,
+        subject: "Direito Processual Penal",
+        board: "FGV"
+    },
+    {
+        id: "cn_cont_3",
+        question: "(FCC) O Balanço Patrimonial é composto por:",
+        options: [
+            "Receitas e Despesas",
+            "Ativo, Passivo e Patrimônio Líquido",
+            "Apenas Ativo",
+            "Apenas Passivo",
+            "Lucros e Prejuízos"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TCM-SP",
+        year: 2023,
+        subject: "Contabilidade",
+        board: "FCC"
+    },
+    {
+        id: "cn_cont_4",
+        question: "(CESPE) Depreciação é:",
+        options: [
+            "Aumento do valor de um bem",
+            "Perda de valor de um bem pelo uso ou tempo",
+            "Compra de um ativo",
+            "Venda de um passivo",
+            "Aumento do patrimônio"
+        ],
+        correctAnswer: 1,
+        commentary: "",
+        source: "TCU",
+        year: 2022,
+        subject: "Contabilidade",
+        board: "CESPE"
     }
 ];

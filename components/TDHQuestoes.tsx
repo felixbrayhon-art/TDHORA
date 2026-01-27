@@ -5,6 +5,8 @@ import { REAL_QUESTIONS } from '../services/realQuestions';
 import { QuizQuestion, QuizFolder, StudyProfile } from '../types';
 import LoadingFish from './LoadingFish';
 import SaveToFolderModal from './SaveToFolderModal';
+import PDFUploadModal from './PDFUploadModal';
+import { RealQuestion } from '../services/realQuestions';
 
 interface TDHQuestoesProps {
   onBack: () => void;
@@ -27,10 +29,23 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
   const [loadingCommentary, setLoadingCommentary] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>('Todas');
   const [selectedBoard, setSelectedBoard] = useState<string>('Todas');
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [importedQuestions, setImportedQuestions] = useState<RealQuestion[]>([]);
+
+  // Carregar questões importadas do localStorage
+  React.useEffect(() => {
+    const saved = localStorage.getItem('importedQuestions');
+    if (saved) {
+      setImportedQuestions(JSON.parse(saved));
+    }
+  }, []);
+
+  // Mesclar questões reais com importadas
+  const allRealQuestions = [...REAL_QUESTIONS, ...importedQuestions];
 
   // Extrair opções únicas para os filtros
-  const subjects = ['Todas', ...Array.from(new Set(REAL_QUESTIONS.map(q => q.subject)))];
-  const boards = ['Todas', ...Array.from(new Set(REAL_QUESTIONS.map(q => q.board)))];
+  const subjects = ['Todas', ...Array.from(new Set(allRealQuestions.map(q => q.subject)))];
+  const boards = ['Todas', ...Array.from(new Set(allRealQuestions.map(q => q.board)))];
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -41,7 +56,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
 
     try {
       if (mode === 'REAL') {
-        const filtered = REAL_QUESTIONS.filter(q => {
+        const filtered = allRealQuestions.filter(q => {
           const matchSubject = selectedSubject === 'Todas' || q.subject === selectedSubject;
           const matchBoard = selectedBoard === 'Todas' || q.board === selectedBoard;
           return matchSubject && matchBoard;
@@ -78,6 +93,14 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
       setLoading(false);
     }
   };
+
+  const handlePDFQuestionsExtracted = (newQuestions: RealQuestion[]) => {
+    const updated = [...importedQuestions, ...newQuestions];
+    setImportedQuestions(updated);
+    localStorage.setItem('importedQuestions', JSON.stringify(updated));
+    alert(`${newQuestions.length} questões adicionadas com sucesso!`);
+  };
+
 
   const handleGetCommentary = async () => {
     if (currentQ.commentary) {
@@ -324,6 +347,13 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
           suggestedName={topic}
           onConfirm={handleConfirmSave}
           onClose={() => setShowSaveModal(false)}
+        />
+      )}
+
+      {showPDFModal && (
+        <PDFUploadModal
+          onClose={() => setShowPDFModal(false)}
+          onQuestionsExtracted={handlePDFQuestionsExtracted}
         />
       )}
     </div>

@@ -160,6 +160,50 @@ export const chatWithFish = async (message: string, history: { role: string, par
   return response.text;
 };
 
+/**
+ * Extrai questões estruturadas de texto de PDF
+ */
+export const extractQuestionsFromPDF = async (
+  pdfText: string,
+  metadata: { subject?: string; board?: string; year?: number; source?: string }
+) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-exp',
+    contents: `Você é um especialista em extrair questões de provas. Analise o texto abaixo e extraia TODAS as questões de múltipla escolha encontradas.
+
+TEXTO DA PROVA:
+${pdfText}
+
+Para cada questão encontrada, retorne um JSON com:
+- question: o enunciado completo da questão
+- options: array com as 5 alternativas (A, B, C, D, E)
+- correctAnswer: índice da resposta correta (0-4), ou null se não souber
+- subject: matéria/assunto da questão (ex: "Matemática", "Português")
+
+Retorne APENAS um array JSON válido, sem explicações adicionais.
+Formato: [{"question": "...", "options": [...], "correctAnswer": 0, "subject": "..."}]`,
+    config: {
+      temperature: 0.3,
+      responseMimeType: 'application/json'
+    }
+  });
+
+  const questions = JSON.parse(response.text);
+
+  // Adiciona metadata e IDs únicos
+  return questions.map((q: any, idx: number) => ({
+    id: `pdf_${Date.now()}_${idx}`,
+    question: q.question,
+    options: q.options,
+    correctAnswer: q.correctAnswer ?? 0,
+    commentary: '',
+    subject: q.subject || metadata.subject || 'Geral',
+    board: metadata.board || 'Importado',
+    source: metadata.source || 'PDF Importado',
+    year: metadata.year || new Date().getFullYear()
+  }));
+};
+
 export const generateQuestionCommentary = async (question: string, options: string[], correctAnswer: number, profile: StudyProfile = 'VESTIBULAR') => {
   const profileTone = profile === 'CONCURSO'
     ? "Foco em concursos (doutrina, lei seca, técnica)."
