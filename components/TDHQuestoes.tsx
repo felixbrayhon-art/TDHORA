@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { generateExamQuestions } from '../services/geminiService';
+import { generateExamQuestions, generateQuestionCommentary } from '../services/geminiService';
+import { REAL_QUESTIONS } from '../services/realQuestions';
 import { QuizQuestion, QuizFolder, StudyProfile } from '../types';
 import LoadingFish from './LoadingFish';
 import SaveToFolderModal from './SaveToFolderModal';
@@ -22,26 +23,77 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
   const [saved, setSaved] = useState(false);
   const [numQuestions, setNumQuestions] = useState(10);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [mode, setMode] = useState<'IA' | 'REAL'>('IA');
+  const [loadingCommentary, setLoadingCommentary] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<string>('Todas');
+  const [selectedBoard, setSelectedBoard] = useState<string>('Todas');
+
+  // Extrair opções únicas para os filtros
+  const subjects = ['Todas', ...Array.from(new Set(REAL_QUESTIONS.map(q => q.subject)))];
+  const boards = ['Todas', ...Array.from(new Set(REAL_QUESTIONS.map(q => q.board)))];
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return;
     setLoading(true);
     setQuestions([]);
     setCurrentIdx(0);
     setShowCommentary(false);
     setSaved(false);
+
     try {
-      const result = await generateExamQuestions(topic, numQuestions, studyProfile);
-      const formatted = result.questions.map((q: any) => ({
-        ...q,
-        id: Math.random().toString(36).substr(2, 9)
-      }));
-      setQuestions(formatted);
+      if (mode === 'REAL') {
+        const filtered = REAL_QUESTIONS.filter(q => {
+          const matchSubject = selectedSubject === 'Todas' || q.subject === selectedSubject;
+          const matchBoard = selectedBoard === 'Todas' || q.board === selectedBoard;
+          return matchSubject && matchBoard;
+        });
+
+        if (filtered.length === 0) {
+          alert("Nenhuma questão encontrada com esses filtros!");
+          setLoading(false);
+          return;
+        }
+
+        const selection = filtered
+          .sort(() => Math.random() - 0.5)
+          .slice(0, numQuestions);
+
+        setQuestions(selection);
+      } else {
+        if (!topic.trim()) {
+          alert("Digite um tema para a IA gerar as questões!");
+          setLoading(false);
+          return;
+        }
+        const result = await generateExamQuestions(topic, numQuestions, studyProfile);
+        const formatted = result.questions.map((q: any) => ({
+          ...q,
+          id: Math.random().toString(36).substr(2, 9)
+        }));
+        setQuestions(formatted);
+      }
     } catch (error) {
       console.error(error);
-      alert("Erro ao gerar simulado. Tente novamente.");
+      alert("Erro ao preparar questões. Tente novamente.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGetCommentary = async () => {
+    if (currentQ.commentary) {
+      setShowCommentary(!showCommentary);
+      return;
+    }
+
+    setLoadingCommentary(true);
+    try {
+      const commentary = await generateQuestionCommentary(currentQ.question, currentQ.options, currentQ.correctAnswer, studyProfile);
+      setQuestions(prev => prev.map((q, idx) => idx === currentIdx ? { ...q, commentary } : q));
+      setShowCommentary(true);
+    } catch (error) {
+      alert("Erro ao gerar comentário da IA.");
+    } finally {
+      setLoadingCommentary(false);
     }
   };
 
@@ -55,8 +107,8 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
 
   if (loading) {
     return (
-      <LoadingFish 
-        message="Arquitetando seu Simulado..." 
+      <LoadingFish
+        message="Arquitetando seu Simulado..."
         submessage={`IA preparando questões focadas em ${studyProfile === 'CONCURSO' ? 'Concursos de Elite' : 'ENEM/Vestibular'}`}
       />
     );
@@ -70,46 +122,86 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
             VOLTAR AO HUB
           </button>
-          
+
           <div className="bg-white rounded-[50px] p-12 md:p-20 shadow-2xl border border-gray-100 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-10 opacity-10">
-               <svg className="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" /></svg>
+              <svg className="w-32 h-32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" /></svg>
             </div>
-            
+
             <div className="relative z-10 text-center max-w-2xl mx-auto">
               <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
               </div>
               <h1 className="text-5xl font-black mb-2 tracking-tighter leading-none italic uppercase">TDH<span className="text-orange-500">questoes</span></h1>
               <p className="text-gray-400 text-lg mb-8 font-medium">Simulados {studyProfile === 'CONCURSO' ? 'nível concurso público' : 'estilo Vestibular/ENEM'} com gabarito comentado.</p>
-              
-              <div className="space-y-10">
-                <input 
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder={studyProfile === 'CONCURSO' ? "Ex: Direito Administrativo - Atos" : "Ex: Biologia - Genética Mendeliana"}
-                  className="w-full bg-gray-50 border-2 border-transparent rounded-[30px] px-8 py-6 text-xl focus:outline-none focus:border-orange-500 transition-all font-medium text-center"
-                  onKeyPress={(e) => e.key === 'Enter' && handleGenerate()}
-                />
+
+              <div className="space-y-6">
+                <div className="flex bg-gray-50 p-2 rounded-[25px] gap-2">
+                  <button
+                    onClick={() => setMode('IA')}
+                    className={`flex-1 py-4 rounded-[20px] font-black text-xs transition-all ${mode === 'IA' ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-400 hover:bg-gray-100'}`}
+                  >
+                    IA GERA PARA MIM
+                  </button>
+                  <button
+                    onClick={() => setMode('REAL')}
+                    className={`flex-1 py-4 rounded-[20px] font-black text-xs transition-all ${mode === 'REAL' ? 'bg-[#0A0F1E] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-100'}`}
+                  >
+                    QUESTÕES REAIS
+                  </button>
+                </div>
+
+                {mode === 'IA' ? (
+                  <input
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    placeholder={studyProfile === 'CONCURSO' ? "Ex: Direito Administrativo - Atos" : "Ex: Biologia - Genética Mendeliana"}
+                    className="w-full bg-gray-50 border-2 border-transparent rounded-[30px] px-8 py-6 text-xl focus:outline-none focus:border-orange-500 transition-all font-medium text-center"
+                    onKeyPress={(e) => e.key === 'Enter' && handleGenerate()}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="text-left">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-4">Matéria</label>
+                      <select
+                        value={selectedSubject}
+                        onChange={(e) => setSelectedSubject(e.target.value)}
+                        className="w-full bg-gray-50 border-2 border-transparent rounded-[20px] px-6 py-4 focus:outline-none focus:border-[#0A0F1E] transition-all font-bold text-gray-700 appearance-none cursor-pointer"
+                      >
+                        {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div className="text-left">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block ml-4">Banca</label>
+                      <select
+                        value={selectedBoard}
+                        onChange={(e) => setSelectedBoard(e.target.value)}
+                        className="w-full bg-gray-50 border-2 border-transparent rounded-[20px] px-6 py-4 focus:outline-none focus:border-[#0A0F1E] transition-all font-bold text-gray-700 appearance-none cursor-pointer"
+                      >
+                        {boards.map(b => <option key={b} value={b}>{b}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-gray-50/50 p-6 rounded-3xl">
                   <div className="flex justify-between mb-4">
-                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Quantidade de Questões</label>
-                     <span className="text-orange-600 font-black">{numQuestions}</span>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Quantidade de Questões</label>
+                    <span className="text-orange-600 font-black">{numQuestions}</span>
                   </div>
-                  <input 
-                    type="range" min="1" max="50" 
+                  <input
+                    type="range" min="1" max="mode === 'REAL' ? REAL_QUESTIONS.length : 50"
                     value={numQuestions}
                     onChange={(e) => setNumQuestions(Number(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-full accent-orange-500 cursor-pointer"
                   />
                 </div>
 
-                <button 
+                <button
                   onClick={handleGenerate}
-                  className="w-full bg-orange-500 text-white py-6 rounded-[30px] font-black text-xl hover:bg-orange-600 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3"
+                  className={`w-full text-white py-6 rounded-[30px] font-black text-xl transition-all shadow-xl flex items-center justify-center gap-3 ${mode === 'REAL' ? 'bg-[#0A0F1E] hover:bg-gray-800 shadow-gray-100' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-100'}`}
                 >
-                  GERAR SIMULADO AGORA
+                  {mode === 'REAL' ? 'BUSCAR NA DATABASE' : 'GERAR SIMULADO IA'}
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                 </button>
               </div>
@@ -128,7 +220,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Questão {currentIdx + 1} de {questions.length} • {studyProfile}</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setShowSaveModal(true)}
               disabled={saved}
               className={`px-6 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 transition-all ${saved ? 'bg-green-500 text-white' : 'bg-[#0A0F1E] text-white hover:bg-orange-500'}`}
@@ -147,9 +239,9 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
               {currentQ.options.map((opt, idx) => {
                 const isCorrect = idx === currentQ.correctAnswer;
                 const isSelected = selectedOpt === idx;
-                
+
                 let btnClass = "border-2 border-gray-50 bg-gray-50/30 hover:bg-white hover:border-orange-200 text-gray-700";
-                
+
                 if (selectedOpt !== null) {
                   if (isCorrect) btnClass = "border-green-500 bg-green-50 text-green-700 ring-4 ring-green-100";
                   else if (isSelected) btnClass = "border-red-500 bg-red-50 text-red-700 ring-4 ring-red-100";
@@ -157,7 +249,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
                 }
 
                 return (
-                  <button 
+                  <button
                     key={idx}
                     onClick={() => setSelectedOpt(idx)}
                     disabled={selectedOpt !== null}
@@ -174,12 +266,22 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
 
             {selectedOpt !== null && (
               <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
-                <button 
-                  onClick={() => setShowCommentary(!showCommentary)}
-                  className="w-full bg-blue-50 text-blue-700 py-4 rounded-[20px] font-black text-sm flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors"
+                <button
+                  onClick={handleGetCommentary}
+                  disabled={loadingCommentary}
+                  className="w-full bg-blue-50 text-blue-700 py-4 rounded-[20px] font-black text-sm flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors disabled:opacity-50"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-                  {showCommentary ? 'OCULTAR GABARITO COMENTADO' : 'VER GABARITO COMENTADO'}
+                  {loadingCommentary ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-blue-700 border-t-transparent animate-spin rounded-full" />
+                      ANALISANDO QUESTÃO...
+                    </div>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                      {showCommentary ? 'OCULTAR GABARITO COMENTADO' : 'IA: COMENTAR ESTA QUESTÃO'}
+                    </>
+                  )}
                 </button>
 
                 {showCommentary && (
@@ -196,16 +298,16 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
           </div>
 
           <div className="flex justify-between items-center">
-            <button 
-              onClick={() => { if(currentIdx > 0) { setCurrentIdx(currentIdx - 1); setSelectedOpt(null); setShowCommentary(false); } }}
+            <button
+              onClick={() => { if (currentIdx > 0) { setCurrentIdx(currentIdx - 1); setSelectedOpt(null); setShowCommentary(false); } }}
               disabled={currentIdx === 0}
               className="px-8 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-gray-400 hover:text-[#0A0F1E] disabled:opacity-30 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
               ANTERIOR
             </button>
-            <button 
-              onClick={() => { if(currentIdx < questions.length - 1) { setCurrentIdx(currentIdx + 1); setSelectedOpt(null); setShowCommentary(false); } }}
+            <button
+              onClick={() => { if (currentIdx < questions.length - 1) { setCurrentIdx(currentIdx + 1); setSelectedOpt(null); setShowCommentary(false); } }}
               disabled={currentIdx === questions.length - 1}
               className="px-8 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-gray-400 hover:text-[#0A0F1E] disabled:opacity-30 transition-all flex items-center gap-2"
             >
@@ -217,7 +319,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
       )}
 
       {showSaveModal && (
-        <SaveToFolderModal 
+        <SaveToFolderModal
           folders={folders}
           suggestedName={topic}
           onConfirm={handleConfirmSave}

@@ -5,7 +5,7 @@ import { StudyProfile } from "../types";
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export const generateStudyContent = async (topic: string, technique: string, numQuestions: number, profile: StudyProfile = 'VESTIBULAR') => {
-  const profileContext = profile === 'CONCURSO' 
+  const profileContext = profile === 'CONCURSO'
     ? "Foco em editais públicos, doutrina pesada, jurisprudência recente e lei seca. Linguagem técnica e formal."
     : "Foco em ENEM e grandes vestibulares. Relacione com atualidades, use linguagem didática e interdisciplinar.";
 
@@ -65,7 +65,7 @@ export const generateStudyContent = async (topic: string, technique: string, num
             type: Type.ARRAY,
             items: {
               type: Type.OBJECT,
-              properties: { 
+              properties: {
                 topic: { type: Type.STRING },
                 description: { type: Type.STRING }
               },
@@ -155,6 +155,27 @@ export const chatWithFish = async (message: string, history: { role: string, par
       temperature: 0.7,
       topP: 0.95,
       topK: 64,
+    }
+  });
+  return response.text;
+};
+
+export const generateQuestionCommentary = async (question: string, options: string[], correctAnswer: number, profile: StudyProfile = 'VESTIBULAR') => {
+  const profileTone = profile === 'CONCURSO'
+    ? "Foco em concursos (doutrina, lei seca, técnica)."
+    : "Foco em vestibulares/ENEM (contextualização, didática).";
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: `Comente esta questão real de prova. 
+    QUESTÃO: ${question}
+    ALTERNATIVAS: ${options.join(' | ')}
+    RESPOSTA CORRETA: Opção ${correctAnswer} (${options[correctAnswer]})
+
+    ${profileTone}
+    Explique por que a resposta está correta e por que as outras estão erradas de forma clara e direta para um estudante com TDAH. Não use emojis. Não use asteriscos.`,
+    config: {
+      temperature: 0.5,
     }
   });
   return response.text;
