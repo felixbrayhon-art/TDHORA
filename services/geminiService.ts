@@ -204,6 +204,126 @@ Formato: [{"question": "...", "options": [...], "correctAnswer": 0, "subject": "
   }));
 };
 
+/**
+ * Gera questões personalizadas a partir de material de estudo
+ */
+export const generateQuestionsFromMaterial = async (
+  materialText: string,
+  difficulty: 'fácil' | 'médio' | 'difícil' = 'médio',
+  quantity: number = 10
+) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-exp',
+    contents: `Você é um professor especialista. Analise o material de estudo abaixo e crie ${quantity} questões de múltipla escolha de nível ${difficulty}.
+
+MATERIAL:
+${materialText.substring(0, 15000)}
+
+Para cada questão, retorne um JSON com:
+- question: enunciado claro e direto
+- options: array com 5 alternativas
+- correctAnswer: índice da resposta correta (0-4)
+- explanation: breve explicação da resposta
+
+Retorne APENAS um array JSON válido.
+Formato: [{"question": "...", "options": [...], "correctAnswer": 0, "explanation": "..."}]`,
+    config: {
+      temperature: 0.4,
+      responseMimeType: 'application/json'
+    }
+  });
+
+  const questions = JSON.parse(response.text);
+  return questions.map((q: any, idx: number) => ({
+    id: `mat_${Date.now()}_${idx}`,
+    question: q.question,
+    options: q.options,
+    correctAnswer: q.correctAnswer,
+    commentary: q.explanation || ''
+  }));
+};
+
+/**
+ * Gera resumo automático do material
+ */
+export const generateMaterialSummary = async (materialText: string, maxLength: number = 500) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-exp',
+    contents: `Crie um resumo conciso e objetivo do seguinte material de estudo. O resumo deve ter no máximo ${maxLength} palavras e destacar os pontos principais.
+
+MATERIAL:
+${materialText.substring(0, 20000)}
+
+RESUMO:`,
+    config: {
+      temperature: 0.3
+    }
+  });
+
+  return response.text;
+};
+
+/**
+ * Gera mapa mental hierárquico do conteúdo
+ */
+export const generateMindMap = async (materialText: string) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-exp',
+    contents: `Analise o material abaixo e crie um mapa mental hierárquico dos conceitos principais.
+
+MATERIAL:
+${materialText.substring(0, 15000)}
+
+Retorne um JSON com a estrutura do mapa mental:
+- id: identificador único
+- label: nome do conceito
+- description: breve descrição (1 linha)
+- children: array de sub-conceitos (mesma estrutura)
+- level: nível hierárquico (0 = raiz)
+
+Crie no máximo 3 níveis de profundidade.
+Retorne APENAS o JSON, sem explicações.
+Formato: {"id": "root", "label": "Tema Principal", "description": "...", "level": 0, "children": [...]}`,
+    config: {
+      temperature: 0.3,
+      responseMimeType: 'application/json'
+    }
+  });
+
+  return JSON.parse(response.text);
+};
+
+/**
+ * Gera flashcards para revisão rápida
+ */
+export const generateFlashcards = async (materialText: string, quantity: number = 20) => {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.0-flash-exp',
+    contents: `Crie ${quantity} flashcards para revisão do seguinte material. Cada flashcard deve ter uma pergunta direta e uma resposta concisa.
+
+MATERIAL:
+${materialText.substring(0, 15000)}
+
+Retorne um array JSON com:
+- question: pergunta objetiva
+- answer: resposta clara e direta (máximo 2 linhas)
+
+Retorne APENAS o array JSON.
+Formato: [{"question": "...", "answer": "..."}]`,
+    config: {
+      temperature: 0.4,
+      responseMimeType: 'application/json'
+    }
+  });
+
+  const flashcards = JSON.parse(response.text);
+  return flashcards.map((f: any, idx: number) => ({
+    id: `flash_${Date.now()}_${idx}`,
+    question: f.question,
+    answer: f.answer
+  }));
+};
+
 export const generateQuestionCommentary = async (question: string, options: string[], correctAnswer: number, profile: StudyProfile = 'VESTIBULAR') => {
   const profileTone = profile === 'CONCURSO'
     ? "Foco em concursos (doutrina, lei seca, técnica)."

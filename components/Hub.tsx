@@ -16,7 +16,7 @@ interface HubProps {
 const Hub: React.FC<HubProps> = ({ setView, setTimerMode, flashcardCount, stats, activeChannel, setActiveChannel, isPlayingRain, setIsPlayingRain }) => {
   const [activeTab, setActiveTab] = useState<HubCategory>('ESTUDO');
   const profileLabel = stats.studyProfile === 'CONCURSO' ? 'Foco: Concursos' : 'Foco: Vestibulares';
-  
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -27,7 +27,7 @@ const Hub: React.FC<HubProps> = ({ setView, setTimerMode, flashcardCount, stats,
             <p className="text-yellow-600 font-black text-xs uppercase tracking-[0.2em]">{profileLabel}</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => setView('COMMUNITY')}
           className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-2xl font-black text-sm hover:shadow-xl hover:bg-gray-800 transition-all shadow-lg"
         >
@@ -69,6 +69,11 @@ const Hub: React.FC<HubProps> = ({ setView, setTimerMode, flashcardCount, stats,
               <h2 className="text-3xl font-black mb-2 italic uppercase">AULA DIRETA</h2>
               <p className="text-yellow-400/80 text-[10px] font-bold uppercase tracking-widest">IA Powered Bizu</p>
             </button>
+            <button onClick={() => setView('STUDY_MATERIALS')} className="bg-gradient-to-br from-purple-500 to-blue-500 text-white p-8 rounded-[40px] text-left relative overflow-hidden group transition-all hover:scale-[1.02] hover:shadow-xl animate-in zoom-in-95 duration-300 delay-200">
+              <div className="mb-8 w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm"><svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
+              <h2 className="text-2xl font-black mb-2 italic uppercase">MATERIAIS DE ESTUDO</h2>
+              <p className="text-white/80 text-[10px] font-bold uppercase tracking-widest">Upload PDF • IA Gera Tudo</p>
+            </button>
           </>
         )}
 
@@ -95,20 +100,20 @@ const Hub: React.FC<HubProps> = ({ setView, setTimerMode, flashcardCount, stats,
         {activeTab === 'RELAXE' && (
           <>
             <div className="bg-white rounded-[40px] p-10 border border-gray-100 flex flex-col justify-between shadow-sm relative overflow-hidden h-full animate-in zoom-in-95 duration-300 lg:col-span-2">
-               <div>
-                  <h2 className="text-3xl font-black italic tracking-tighter uppercase mb-2 leading-none">AMBIENTE <span className="text-yellow-400">SONORO</span></h2>
-                  <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-10">Controle o Lofi e os ruídos brancos</p>
-               </div>
-               <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => setActiveChannel(activeChannel === 'RELAX' ? null : 'RELAX')} className={`p-6 rounded-[30px] flex flex-col items-center gap-2 transition-all border-4 ${activeChannel === 'RELAX' ? 'bg-yellow-400 border-yellow-400 text-white shadow-xl shadow-yellow-100' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200'}`}>
-                    <span className="text-xs font-black uppercase tracking-widest italic">LOFI RELAX</span>
-                  </button>
-                  <button onClick={() => setIsPlayingRain(!isPlayingRain)} className={`p-6 rounded-[30px] flex items-center justify-center gap-4 transition-all border-4 ${isPlayingRain ? 'bg-blue-500 border-blue-500 text-white shadow-xl shadow-blue-100' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200'}`}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
-                  </button>
-               </div>
+              <div>
+                <h2 className="text-3xl font-black italic tracking-tighter uppercase mb-2 leading-none">AMBIENTE <span className="text-yellow-400">SONORO</span></h2>
+                <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-10">Controle o Lofi e os ruídos brancos</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <button onClick={() => setActiveChannel(activeChannel === 'RELAX' ? null : 'RELAX')} className={`p-6 rounded-[30px] flex flex-col items-center gap-2 transition-all border-4 ${activeChannel === 'RELAX' ? 'bg-yellow-400 border-yellow-400 text-white shadow-xl shadow-yellow-100' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200'}`}>
+                  <span className="text-xs font-black uppercase tracking-widest italic">LOFI RELAX</span>
+                </button>
+                <button onClick={() => setIsPlayingRain(!isPlayingRain)} className={`p-6 rounded-[30px] flex items-center justify-center gap-4 transition-all border-4 ${isPlayingRain ? 'bg-blue-500 border-blue-500 text-white shadow-xl shadow-blue-100' : 'bg-gray-50 border-transparent text-gray-400 hover:border-gray-200'}`}>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
+                </button>
+              </div>
             </div>
-            
+
             <button onClick={() => { setTimerMode(TimerMode.EMERGENCY); setView('TIMER'); }} className="gradient-orange text-white p-8 rounded-[40px] text-left relative overflow-hidden group transition-all hover:scale-[1.02] hover:shadow-xl animate-in zoom-in-95 duration-300 delay-150 h-full">
               <div className="mb-12"><svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>
               <h2 className="text-3xl font-black leading-none uppercase italic">EMERGÊNCIA</h2>

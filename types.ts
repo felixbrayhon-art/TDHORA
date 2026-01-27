@@ -1,5 +1,5 @@
 
-export type AppView = 'HUB' | 'TIMER' | 'FLASHCARDS' | 'AI_DIRECT' | 'MATERIALS' | 'QUIZ_PLAYER' | 'TDH_QUESTOES' | 'STUDY_PLAN' | 'PROFILE' | 'COMMUNITY' | 'FOCUS_MODE';
+export type AppView = 'HUB' | 'TIMER' | 'FLASHCARDS' | 'AI_DIRECT' | 'MATERIALS' | 'QUIZ_PLAYER' | 'TDH_QUESTOES' | 'STUDY_PLAN' | 'PROFILE' | 'COMMUNITY' | 'FOCUS_MODE' | 'STUDY_MATERIALS';
 export type StudyProfile = 'VESTIBULAR' | 'CONCURSO';
 export type HubCategory = 'ESTUDO' | 'ORGANIZACAO' | 'RELAXE';
 
@@ -113,9 +113,9 @@ export interface StudySession {
 export interface StudySubject {
   id: string;
   name: string;
-  weight: number; 
+  weight: number;
   color: string;
-  targetMinutes: number; 
+  targetMinutes: number;
   completedMinutesTotal: number;
 }
 
@@ -127,4 +127,34 @@ export interface StudyPlan {
 
 export interface DailyHistory {
   [date: string]: number;
+}
+
+// === SISTEMA DE MATERIAIS DE ESTUDO ===
+export interface StudyMaterial {
+  id: string;
+  title: string;
+  fileName: string;
+  uploadDate: Date;
+  content: string;
+  summary?: string;
+  questions?: QuizQuestion[];
+  mindMap?: MindMapNode;
+  flashcards?: Flashcard[];
+  tags?: string[];
+  subject?: string;
+}
+
+export interface MindMapNode {
+  id: string;
+  label: string;
+  description?: string;
+  children?: MindMapNode[];
+  level: number;
+}
+
+export interface Flashcard {
+  id: string;
+  question: string;
+  answer: string;
+  materialId?: string;
 }

@@ -16,6 +16,9 @@ import SplashScreen from './components/SplashScreen';
 import FishCompanion from './components/FishCompanion';
 import ProfileSelection from './components/ProfileSelection';
 import FocusModeView from './components/FocusModeView';
+import StudyMaterialHub from './components/StudyMaterialHub';
+import MaterialViewer from './components/MaterialViewer';
+import { StudyMaterial } from './types';
 
 // URLs de Áudio
 const LOFI_RELAX_URL = "https://stream.zeno.fm/0r0xa792kwzuv";
@@ -48,6 +51,7 @@ const App: React.FC = () => {
   const [activeNotebookInfo, setActiveNotebookInfo] = useState<{ folderId: string, notebookId: string } | null>(null);
   const [activeSubjectId, setActiveSubjectId] = useState<string | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [currentMaterial, setCurrentMaterial] = useState<StudyMaterial | null>(null);
   const [history, setHistory] = useState<DailyHistory>({});
 
   const [focusSettings, setFocusSettings] = useState<FocusSettings>({
@@ -350,6 +354,18 @@ const App: React.FC = () => {
         {currentView === 'FOCUS_MODE' && <FocusModeView settings={focusSettings} onUpdate={setFocusSettings} onBack={() => setCurrentView('HUB')} />}
         {currentView === 'PROFILE' && <ProfileView stats={stats} onUpdate={setStats} onBack={() => setCurrentView('HUB')} />}
         {currentView === 'COMMUNITY' && <CommunityView activities={activities} onBack={() => setCurrentView('HUB')} onPostManual={handleManualPost} />}
+        {currentView === 'STUDY_MATERIALS' && !currentMaterial && (
+          <StudyMaterialHub
+            onBack={() => setCurrentView('HUB')}
+            onViewMaterial={(material) => setCurrentMaterial(material)}
+          />
+        )}
+        {currentView === 'STUDY_MATERIALS' && currentMaterial && (
+          <MaterialViewer
+            material={currentMaterial}
+            onBack={() => setCurrentMaterial(null)}
+          />
+        )}
       </main>
 
       <FishCompanion studyProfile={stats.studyProfile} />
