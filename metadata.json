@@ -1,0 +1,7 @@
+{
+  "name": "TDAH ORA - Hub de Foco",
+  "description": "Um hub de estudo completo projetado para neurodivergentes, incluindo modo pomodoro, modo de emergência, player de Lo-Fi, flashcards e uma poderosa IA integrada para resumos e quizzes.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
