@@ -18,21 +18,21 @@ import ProfileSelection from './components/ProfileSelection';
 import FocusModeView from './components/FocusModeView';
 
 // URLs de Áudio
-const LOFI_RELAX_URL = "https://stream.zeno.fm/0r0xa792kwzuv"; 
+const LOFI_RELAX_URL = "https://stream.zeno.fm/0r0xa792kwzuv";
 const MPB_LOFI_URL = "https://stream.zeno.fm/f978v6v6h0huv";
-const RAIN_SOUND_URL = "https://www.soundjay.com/nature/rain-01.mp3"; 
+const RAIN_SOUND_URL = "https://www.soundjay.com/nature/rain-01.mp3";
 
 const App: React.FC = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentView, setCurrentView] = useState<AppView>('HUB');
   const [timerMode, setTimerMode] = useState<TimerMode>(TimerMode.POMODORO);
   const [showGlobalBar, setShowGlobalBar] = useState(true);
-  
+
   // Audio Global State
   const [activeChannel, setActiveChannel] = useState<'RELAX' | 'MPB' | null>(null);
   const [isPlayingRain, setIsPlayingRain] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.5);
-  
+
   const relaxAudioRef = useRef<HTMLAudioElement | null>(null);
   const mpbAudioRef = useRef<HTMLAudioElement | null>(null);
   const rainAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -45,11 +45,11 @@ const App: React.FC = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [folders, setFolders] = useState<QuizFolder[]>([]);
   const [attempts, setAttempts] = useState<QuizAttempt[]>([]);
-  const [activeNotebookInfo, setActiveNotebookInfo] = useState<{folderId: string, notebookId: string} | null>(null);
+  const [activeNotebookInfo, setActiveNotebookInfo] = useState<{ folderId: string, notebookId: string } | null>(null);
   const [activeSubjectId, setActiveSubjectId] = useState<string | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [history, setHistory] = useState<DailyHistory>({});
-  
+
   const [focusSettings, setFocusSettings] = useState<FocusSettings>({
     waterReminder: true,
     waterInterval: 45,
@@ -81,17 +81,17 @@ const App: React.FC = () => {
   useEffect(() => {
     if (relaxAudioRef.current) relaxAudioRef.current.pause();
     if (mpbAudioRef.current) mpbAudioRef.current.pause();
-    
+
     if (activeChannel === 'RELAX' && relaxAudioRef.current) {
-      relaxAudioRef.current.play().catch(() => {});
+      relaxAudioRef.current.play().catch(() => { });
     } else if (activeChannel === 'MPB' && mpbAudioRef.current) {
-      mpbAudioRef.current.play().catch(() => {});
+      mpbAudioRef.current.play().catch(() => { });
     }
   }, [activeChannel]);
 
   useEffect(() => {
     if (rainAudioRef.current) {
-      if (isPlayingRain) rainAudioRef.current.play().catch(() => {});
+      if (isPlayingRain) rainAudioRef.current.play().catch(() => { });
       else rainAudioRef.current.pause();
     }
   }, [isPlayingRain]);
@@ -101,6 +101,63 @@ const App: React.FC = () => {
     if (mpbAudioRef.current) mpbAudioRef.current.volume = audioVolume;
     if (rainAudioRef.current) rainAudioRef.current.volume = audioVolume * 0.6;
   }, [audioVolume]);
+
+  // Persistência - Carregar dados ao iniciar
+  useEffect(() => {
+    try {
+      const savedStats = localStorage.getItem('tdh_stats');
+      if (savedStats) setStats(JSON.parse(savedStats));
+
+      const savedFolders = localStorage.getItem('tdh_folders');
+      if (savedFolders) setFolders(JSON.parse(savedFolders));
+
+      const savedFlashcards = localStorage.getItem('tdh_flashcards');
+      if (savedFlashcards) setFlashcards(JSON.parse(savedFlashcards));
+
+      const savedStudyPlan = localStorage.getItem('tdh_study_plan');
+      if (savedStudyPlan) setStudyPlan(JSON.parse(savedStudyPlan));
+
+      const savedHistory = localStorage.getItem('tdh_history');
+      if (savedHistory) setHistory(JSON.parse(savedHistory));
+
+      const savedActivities = localStorage.getItem('tdh_activities');
+      if (savedActivities) setActivities(JSON.parse(savedActivities));
+
+      const savedFocusSettings = localStorage.getItem('tdh_focus_settings');
+      if (savedFocusSettings) setFocusSettings(JSON.parse(savedFocusSettings));
+    } catch (error) {
+      console.error("Erro ao carregar dados do localStorage:", error);
+    }
+  }, []);
+
+  // Persistência - Salvar dados em qualquer mudança
+  useEffect(() => {
+    if (stats.studyProfile) localStorage.setItem('tdh_stats', JSON.stringify(stats));
+  }, [stats]);
+
+  useEffect(() => {
+    if (folders.length > 0) localStorage.setItem('tdh_folders', JSON.stringify(folders));
+  }, [folders]);
+
+  useEffect(() => {
+    if (flashcards.length > 0) localStorage.setItem('tdh_flashcards', JSON.stringify(flashcards));
+  }, [flashcards]);
+
+  useEffect(() => {
+    localStorage.setItem('tdh_study_plan', JSON.stringify(studyPlan));
+  }, [studyPlan]);
+
+  useEffect(() => {
+    localStorage.setItem('tdh_history', JSON.stringify(history));
+  }, [history]);
+
+  useEffect(() => {
+    if (activities.length > 0) localStorage.setItem('tdh_activities', JSON.stringify(activities));
+  }, [activities]);
+
+  useEffect(() => {
+    localStorage.setItem('tdh_focus_settings', JSON.stringify(focusSettings));
+  }, [focusSettings]);
 
   // Global Clock
   useEffect(() => {
@@ -128,7 +185,7 @@ const App: React.FC = () => {
     const today = new Date().toISOString().split('T')[0];
     setHistory(prev => ({ ...prev, [today]: (prev[today] || 0) + minutes }));
     addXP(minutes * 2);
-    
+
     const newActivity: Activity = {
       id: Math.random().toString(36).substr(2, 9),
       userName: stats.name,
@@ -199,9 +256,9 @@ const App: React.FC = () => {
       {showGlobalBar && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[150] w-[95%] max-w-2xl animate-in slide-in-from-bottom-8 duration-500">
           <div className="bg-white/90 backdrop-blur-xl border border-white shadow-2xl rounded-[35px] p-2 flex items-center justify-between gap-3 relative">
-            
+
             {/* Botão Fechar - Agora silencia o app e para o cronômetro */}
-            <button 
+            <button
               onClick={handleCloseGlobalBar}
               className="absolute -top-3 -right-3 w-8 h-8 bg-white shadow-md border border-gray-100 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 transition-all hover:scale-110 z-20"
               title="Parar atividades e fechar"
@@ -230,9 +287,9 @@ const App: React.FC = () => {
                   {globalTimerActive ? <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg> : <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>}
                 </button>
                 {!globalTimerActive && (
-                  <button 
-                    onClick={() => { setCurrentView('TIMER'); }} 
-                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-300 hover:text-yellow-500 border border-gray-100 transition-all" 
+                  <button
+                    onClick={() => { setCurrentView('TIMER'); }}
+                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-300 hover:text-yellow-500 border border-gray-100 transition-all"
                     title="Editar Duração"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -250,7 +307,7 @@ const App: React.FC = () => {
 
       {/* Botão Flutuante de Recuperação do Hub */}
       {!showGlobalBar && (
-        <button 
+        <button
           onClick={() => setShowGlobalBar(true)}
           className="fixed bottom-8 right-8 w-14 h-14 bg-yellow-400 text-white rounded-[20px] shadow-2xl flex items-center justify-center animate-in zoom-in duration-300 z-50 hover:scale-110 active:scale-95"
           title="Abrir Controles de Foco"
@@ -261,8 +318,8 @@ const App: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 py-8 relative">
         {currentView === 'HUB' && (
-          <Hub 
-            setView={setCurrentView} 
+          <Hub
+            setView={setCurrentView}
             setTimerMode={(mode) => { setTimerMode(mode); setGlobalTimerSeconds(mode === TimerMode.EMERGENCY ? 300 : 1500); setShowGlobalBar(true); }}
             flashcardCount={flashcards.length}
             stats={stats}
@@ -272,22 +329,22 @@ const App: React.FC = () => {
             setIsPlayingRain={setIsPlayingRain}
           />
         )}
-        
+
         {currentView === 'TIMER' && (
-          <TimerView 
-            isActive={globalTimerActive} 
-            setIsActive={setGlobalTimerActive} 
-            seconds={globalTimerSeconds} 
-            setSeconds={setGlobalTimerSeconds} 
-            mode={timerMode} 
-            onBack={() => setCurrentView('HUB')} 
-            onComplete={() => logStudyMinutes(timerMode === TimerMode.EMERGENCY ? 5 : 25)} 
+          <TimerView
+            isActive={globalTimerActive}
+            setIsActive={setGlobalTimerActive}
+            seconds={globalTimerSeconds}
+            setSeconds={setGlobalTimerSeconds}
+            mode={timerMode}
+            onBack={() => setCurrentView('HUB')}
+            onComplete={() => logStudyMinutes(timerMode === TimerMode.EMERGENCY ? 5 : 25)}
           />
         )}
 
-        {currentView === 'AI_DIRECT' && <AIView onBack={() => setCurrentView('HUB')} folders={folders} onSaveToNotebook={handleSaveToNotebook} studyProfile={stats.studyProfile!} onNewContent={(c) => setFlashcards(prev => [...prev, ...c.flashcards.map((f:any) => ({id: Math.random().toString(36).substr(2,9), ...f}))])} />}
+        {currentView === 'AI_DIRECT' && <AIView onBack={() => setCurrentView('HUB')} folders={folders} onSaveToNotebook={handleSaveToNotebook} studyProfile={stats.studyProfile!} onNewContent={(c) => setFlashcards(prev => [...prev, ...c.flashcards.map((f: any) => ({ id: Math.random().toString(36).substr(2, 9), ...f }))])} />}
         {currentView === 'TDH_QUESTOES' && <TDHQuestoes onBack={() => setCurrentView('HUB')} folders={folders} onSaveToNotebook={handleSaveToNotebook} studyProfile={stats.studyProfile!} />}
-        {currentView === 'MATERIALS' && <MaterialsManager folders={folders} attempts={attempts} onCreateFolder={name => setFolders(prev => [...prev, { id: Math.random().toString(36).substr(2,9), name, topic: name, notebooks: [], createdAt: Date.now() }])} onCreateNotebook={(fid, name) => setFolders(prev => prev.map(f => f.id === fid ? { ...f, notebooks: [...f.notebooks, { id: Math.random().toString(36).substr(2,9), name, questions: [], createdAt: Date.now() }] } : f))} onBack={() => setCurrentView('HUB')} onPlayQuiz={(fid, nid) => { setActiveNotebookInfo({folderId: fid, notebookId: nid}); setCurrentView('QUIZ_PLAYER'); }} />}
+        {currentView === 'MATERIALS' && <MaterialsManager folders={folders} attempts={attempts} onCreateFolder={name => setFolders(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), name, topic: name, notebooks: [], createdAt: Date.now() }])} onCreateNotebook={(fid, name) => setFolders(prev => prev.map(f => f.id === fid ? { ...f, notebooks: [...f.notebooks, { id: Math.random().toString(36).substr(2, 9), name, questions: [], createdAt: Date.now() }] } : f))} onBack={() => setCurrentView('HUB')} onPlayQuiz={(fid, nid) => { setActiveNotebookInfo({ folderId: fid, notebookId: nid }); setCurrentView('QUIZ_PLAYER'); }} />}
         {currentView === 'QUIZ_PLAYER' && activeNotebookInfo && <QuizPlayer folder={folders.find(f => f.id === activeNotebookInfo.folderId)!} notebook={folders.find(f => f.id === activeNotebookInfo.folderId)!.notebooks.find(n => n.id === activeNotebookInfo.notebookId)!} onBack={() => setCurrentView('MATERIALS')} onComplete={(score, total) => { setAttempts(prev => [...prev, { folderId: activeNotebookInfo.folderId, notebookId: activeNotebookInfo.notebookId, date: Date.now(), score, total }]); addXP(score * 50); setCurrentView('MATERIALS'); }} />}
         {currentView === 'STUDY_PLAN' && <StudyPlanView onBack={() => setCurrentView('HUB')} plan={studyPlan} history={history} onUpdatePlan={setStudyPlan} onStartTimer={(s) => { setActiveSubjectId(s.id); setTimerMode(TimerMode.POMODORO); setGlobalTimerSeconds(1500); setShowGlobalBar(true); setCurrentView('TIMER'); }} />}
         {currentView === 'FOCUS_MODE' && <FocusModeView settings={focusSettings} onUpdate={setFocusSettings} onBack={() => setCurrentView('HUB')} />}
