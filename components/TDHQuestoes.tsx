@@ -31,6 +31,15 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
   const [selectedBoard, setSelectedBoard] = useState<string>('Todas');
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [importedQuestions, setImportedQuestions] = useState<RealQuestion[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // Verificar se a API key está configurada
+  React.useEffect(() => {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey || apiKey === 'sua_api_key_aqui') {
+      setError('API key do Gemini não configurada. Verifique o arquivo .env');
+    }
+  }, []);
 
   // Carregar questões importadas do localStorage
   React.useEffect(() => {
@@ -52,21 +61,12 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
     setQuestions([]);
     setCurrentIdx(0);
     setShowCommentary(false);
-    setSaved(false);
-
     try {
       if (mode === 'REAL') {
-        const filtered = allRealQuestions.filter(q => {
-          const matchSubject = selectedSubject === 'Todas' || q.subject === selectedSubject;
-          const matchBoard = selectedBoard === 'Todas' || q.board === selectedBoard;
-          return matchSubject && matchBoard;
-        });
-
-        if (filtered.length === 0) {
-          alert("Nenhuma questão encontrada com esses filtros!");
-          setLoading(false);
-          return;
-        }
+        const filtered = REAL_QUESTIONS.filter(q => 
+          (selectedSubject === 'Todas' || q.subject === selectedSubject) &&
+          (selectedBoard === 'Todas' || q.board === selectedBoard)
+        );
 
         const selection = filtered
           .sort(() => Math.random() - 0.5)
@@ -79,16 +79,27 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
           setLoading(false);
           return;
         }
+        
+        console.log('Gerando questões:', { topic, numQuestions, studyProfile });
         const result = await generateExamQuestions(topic, numQuestions, studyProfile);
+        console.log('Resultado da API:', result);
+        
+        if (!result || !result.questions || result.questions.length === 0) {
+          throw new Error('A API não retornou questões válidas');
+        }
+        
         const formatted = result.questions.map((q: any) => ({
           ...q,
           id: Math.random().toString(36).substr(2, 9)
         }));
+        
+        console.log('Questões formatadas:', formatted);
         setQuestions(formatted);
       }
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao preparar questões. Tente novamente.");
+    } catch (error: any) {
+      console.error('Erro ao gerar questões:', error);
+      setError(error.message || 'Erro ao gerar questões. Tente novamente.');
+      alert(`Erro: ${error.message || 'Erro ao gerar questões. Verifique sua API key.'}`);
     } finally {
       setLoading(false);
     }
@@ -127,6 +138,28 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
   };
 
   const currentQ = questions[currentIdx];
+
+  // Mostrar erro se a API key não estiver configurada
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
+        <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-black text-red-800 mb-2">API Key Não Configurada</h3>
+          <p className="text-red-600 text-sm leading-relaxed mb-4">
+            {error}
+          </p>
+          <p className="text-gray-500 text-xs">
+            Configure VITE_GEMINI_API_KEY no arquivo .env para usar as funcionalidades de IA.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
