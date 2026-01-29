@@ -1,0 +1,7 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="48" fill="#FACC15"/>
+  <path d="M10 96 C 25 76, 55 71, 80 91 C 90 86, 95 81, 100 86 C 97 96, 97 96, 100 106 C 95 111, 90 106, 80 101 C 55 121, 25 116, 10 96" fill="#0A0F1E"/>
+  <circle cx="28" cy="93" r="4" fill="white"/>
+  <circle cx="29" cy="93" r="1.8" fill="#0A0F1E"/>
+  <text x="96" y="140" font-family="Arial Black, sans-serif" font-size="24" font-weight="900" text-anchor="middle" fill="#0A0F1E">TDAH ORA</text>
+</svg>
