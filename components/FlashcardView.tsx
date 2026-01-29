@@ -35,9 +35,17 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ flashcards, onBack, setFl
           <p className="text-gray-400 text-lg leading-relaxed max-w-sm mb-12">
             Use a ferramenta de IA para gerar resumos e criar cards automaticamente.
           </p>
-          <button className="bg-yellow-400 text-black px-10 py-5 rounded-[20px] font-black text-lg shadow-xl shadow-yellow-100 hover:scale-105 transition-all">
-            GERAR CARDS COM IA
-          </button>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => window.location.hash = '#FLASHCARD_MANAGER'}
+              className="bg-blue-500 text-white px-8 py-4 rounded-[20px] font-black text-lg shadow-xl shadow-blue-100 hover:scale-105 transition-all"
+            >
+              GERENCIAR CARDS
+            </button>
+            <button className="bg-yellow-400 text-black px-8 py-4 rounded-[20px] font-black text-lg shadow-xl shadow-yellow-100 hover:scale-105 transition-all">
+              GERAR CARDS COM IA
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -54,6 +62,20 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ flashcards, onBack, setFl
           </svg>
           VOLTAR AO HUB
         </button>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => window.location.hash = '#FLASHCARD_MANAGER'}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+          >
+            Gerenciar
+          </button>
+          <button 
+            onClick={() => window.location.hash = '#FLASHCARD_STUDY'}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+          >
+            Estudar
+          </button>
+        </div>
         <span className="text-gray-300 font-bold tabular-nums">{currentIndex + 1} / {flashcards.length}</span>
       </div>
 

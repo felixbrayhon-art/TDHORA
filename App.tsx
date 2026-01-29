@@ -5,6 +5,8 @@ import Header from './components/Header';
 import Hub from './components/Hub';
 import TimerView from './components/TimerView';
 import FlashcardView from './components/FlashcardView';
+import FlashcardManager from './components/FlashcardManager';
+import FlashcardStudy from './components/FlashcardStudy';
 import AIView from './components/AIView';
 import MaterialsManager from './components/MaterialsManager';
 import QuizPlayer from './components/QuizPlayer';
@@ -80,6 +82,22 @@ const App: React.FC = () => {
     totalDaysStudied: 0,
     studyProfile: undefined
   });
+
+  // Roteamento para views específicas via hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'FLASHCARD_MANAGER') {
+        setCurrentView('FLASHCARD_MANAGER');
+      } else if (hash === 'FLASHCARD_STUDY') {
+        setCurrentView('FLASHCARD_STUDY');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Audio Effects
   useEffect(() => {
@@ -345,6 +363,10 @@ const App: React.FC = () => {
             onComplete={() => logStudyMinutes(timerMode === TimerMode.EMERGENCY ? 5 : 25)}
           />
         )}
+
+        {currentView === 'FLASHCARDS' && <FlashcardView flashcards={flashcards} setFlashcards={setFlashcards} onBack={() => setCurrentView('HUB')} />}
+        {currentView === 'FLASHCARD_MANAGER' && <FlashcardManager onBack={() => setCurrentView('FLASHCARDS')} onFlashcardsChange={setFlashcards} />}
+        {currentView === 'FLASHCARD_STUDY' && <FlashcardStudy flashcards={flashcards} onBack={() => setCurrentView('FLASHCARDS')} />}
 
         {currentView === 'AI_DIRECT' && <AIView onBack={() => setCurrentView('HUB')} folders={folders} onSaveToNotebook={handleSaveToNotebook} studyProfile={stats.studyProfile!} onNewContent={(c) => setFlashcards(prev => [...prev, ...c.flashcards.map((f: any) => ({ id: Math.random().toString(36).substr(2, 9), ...f }))])} />}
         {currentView === 'TDH_QUESTOES' && <TDHQuestoes onBack={() => setCurrentView('HUB')} folders={folders} onSaveToNotebook={handleSaveToNotebook} studyProfile={stats.studyProfile!} />}
