@@ -72,26 +72,27 @@ const FishLogo: React.FC<FishLogoProps> = ({
 
       {!iconOnly && (
         <div className="flex items-center group cursor-default">
-          <div className="relative flex items-center">
-            <span 
-              className="text-4xl font-[900] italic tracking-[-0.08em] uppercase transition-all duration-300 group-hover:tracking-[-0.04em]"
-              style={{ 
-                color: primaryColor,
-                textShadow: '0 2px 10px rgba(234, 179, 8, 0.2)'
-              }}
-            >
-              TDAH
-            </span>
-          </div>
-
-          <div className="flex flex-col items-start -ml-1.5 pt-1">
-            <div className="flex flex-col leading-[0.7] transform -skew-x-12 group-hover:skew-x-0 transition-transform duration-500">
-              <span className="text-lg font-[900] italic uppercase" style={{ color: secondaryColor }}>O</span>
-              <span className="text-[14px] font-[900] italic uppercase opacity-90 ml-0.5" style={{ color: secondaryColor }}>R</span>
-              <span className="text-[11px] font-[900] italic uppercase opacity-80 ml-1" style={{ color: secondaryColor }}>A</span>
-            </div>
-            <div className="h-1 w-0 group-hover:w-full bg-yellow-400/30 rounded-full transition-all duration-700 mt-1" />
-          </div>
+          <span 
+            className="text-4xl font-[900] italic tracking-tight uppercase transition-all duration-300 group-hover:tracking-normal"
+            style={{ 
+              color: primaryColor,
+              textShadow: '0 2px 10px rgba(234, 179, 8, 0.2)'
+            }}
+          >
+            TDAH
+          </span>
+          
+          <span 
+            className="text-4xl font-[900] italic tracking-tight uppercase ml-2 transition-all duration-300 group-hover:tracking-normal"
+            style={{ 
+              color: secondaryColor,
+              textShadow: '0 2px 10px rgba(250, 204, 21, 0.2)'
+            }}
+          >
+            ORA
+          </span>
+          
+          <div className="h-1 w-0 group-hover:w-full bg-yellow-400/30 rounded-full transition-all duration-700 ml-3" />
         </div>
       )}
     </div>
