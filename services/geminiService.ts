@@ -45,13 +45,17 @@ export const generateStudyContent = async (topic: string, technique: string, num
   return retryWithBackoff(async () => {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Gere um DOSSIÊ COMPLETO de estudo sobre "${topic}". 
+      contents: `Gere um DOSSIÊ COMPLETO de estudo sobre "${topic}" com exatamente ${numQuestions} questões no quiz. 
       ${profileContext} 
       
       REQUISITOS DE CONTEÚDO:
       1. executiveSummary: Deve ser longo (mínimo 4 parágrafos), detalhado e estruturado.
       2. deepDive: Uma análise técnica profunda sobre o ponto mais complexo do tema.
       3. explorationMenu: 3 a 4 tópicos específicos relacionados a este tema para o usuário escolher explorar depois.
+      4. quiz: DEVE conter exatamente ${numQuestions} questões.
+      5. flashcards: Gere ${Math.max(8, numQuestions * 2)} flashcards para revisão.
+      
+      IMPORTANTE: O array "quiz" deve ter EXATAMENTE ${numQuestions} questões, nem mais nem menos.
       
       Não use emojis. Não use formatação com asteriscos.
       
@@ -108,6 +112,8 @@ export const generateStudyContent = async (topic: string, technique: string, num
             },
             quiz: {
               type: Type.ARRAY,
+              minItems: numQuestions,
+              maxItems: numQuestions,
               items: {
                 type: Type.OBJECT,
                 properties: {
@@ -121,6 +127,8 @@ export const generateStudyContent = async (topic: string, technique: string, num
             },
             flashcards: {
               type: Type.ARRAY,
+              minItems: Math.max(8, numQuestions * 2),
+              maxItems: Math.max(8, numQuestions * 2),
               items: {
                 type: Type.OBJECT,
                 properties: { question: { type: Type.STRING }, answer: { type: Type.STRING } },
@@ -145,7 +153,10 @@ export const generateExamQuestions = async (topic: string, numQuestions: number,
   return retryWithBackoff(async () => {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Gere um simulado de questões ${profileStyle} sobre "${topic}". As questões devem ser de múltipla escolha (A a E). 
+      contents: `Gere EXATAMENTE ${numQuestions} questões ${profileStyle} sobre "${topic}". As questões devem ser de múltipla escolha (A a E). 
+      
+      IMPORTANTE: O array "questions" DEVE conter exatamente ${numQuestions} questões, nem mais nem menos.
+      
       Não use emojis. Não use formatação de texto com asteriscos.
       Inclua obrigatoriamente um "commentary" detalhado explicando por que a alternativa correta é a certa e por que as outras estão erradas.`,
       config: {
@@ -156,6 +167,8 @@ export const generateExamQuestions = async (topic: string, numQuestions: number,
           properties: {
             questions: {
               type: Type.ARRAY,
+              minItems: numQuestions,
+              maxItems: numQuestions,
               items: {
                 type: Type.OBJECT,
                 properties: {
