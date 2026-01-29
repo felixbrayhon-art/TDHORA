@@ -59,7 +59,21 @@ const Hub: React.FC<HubProps> = ({ setView, setTimerMode, flashcardCount, stats,
               <h2 className="text-2xl font-black mb-2 italic">MEUS <span className="text-blue-500">materiais</span></h2>
               <p className="text-gray-400 text-sm font-bold uppercase tracking-widest text-[10px]">Resumos & Cadernos</p>
             </button>
-            <button onClick={() => setView('TDH_QUESTOES')} className="bg-white p-8 rounded-[40px] text-left border border-gray-100 transition-all hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden animate-in zoom-in-95 duration-300 delay-75">
+            <button onClick={() => setView('FLASHCARDS')} className="bg-white p-8 rounded-[40px] text-left border border-gray-100 transition-all hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden animate-in zoom-in-95 duration-300 delay-75">
+              <div className="mb-8 w-12 h-12 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center relative z-10 shadow-sm">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-black mb-2 relative z-10 uppercase italic">FLASH<span className="text-yellow-500">cards</span></h2>
+              <p className="text-gray-400 text-sm mb-4 relative z-10 font-bold uppercase tracking-widest text-[10px]">Repetição Espaçada</p>
+              {flashcardCount > 0 && (
+                <div className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-black px-2 py-1 rounded-full">
+                  {flashcardCount}
+                </div>
+              )}
+            </button>
+            <button onClick={() => setView('TDH_QUESTOES')} className="bg-white p-8 rounded-[40px] text-left border border-gray-100 transition-all hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden animate-in zoom-in-95 duration-300 delay-100">
               <div className="mb-8 w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center relative z-10"><svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" /></svg></div>
               <h2 className="text-2xl font-black mb-2 relative z-10 uppercase italic">TDH<span className="text-blue-500">questoes</span></h2>
               <p className="text-gray-400 text-sm mb-4 relative z-10 font-bold uppercase tracking-widest text-[10px]">Batalha de Simulados</p>
