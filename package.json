@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^1.38.0",
     "@openrouter/sdk": "^0.5.1",
     "pdfjs-dist": "^5.4.530",
     "react": "^19.2.3",

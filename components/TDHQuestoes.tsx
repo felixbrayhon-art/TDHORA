@@ -36,9 +36,9 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
 
   // Verificar se a API key está configurada
   React.useEffect(() => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey || apiKey === 'sua_api_key_aqui') {
-      setError('API key do Gemini não configurada. Verifique o arquivo .env');
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    if (!apiKey || apiKey === 'sk-or-v1-') {
+      setError('API key da OpenRouter não configurada. Verifique o arquivo .env');
     }
   }, []);
 
@@ -155,7 +155,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
             {error}
           </p>
           <p className="text-gray-500 text-xs">
-            Configure VITE_GEMINI_API_KEY no arquivo .env para usar as funcionalidades de IA.
+            Configure VITE_OPENROUTER_API_KEY no arquivo .env para usar as funcionalidades de IA.
           </p>
         </div>
       </div>
