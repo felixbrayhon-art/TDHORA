@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { generateExamQuestions, generateQuestionCommentary } from '../services/geminiService';
+import { generateQuestionCommentary } from '../services/geminiService';
+import { generateExamQuestionsHybrid } from '../services/hybridAIService';
 import { REAL_QUESTIONS } from '../services/realQuestions';
 import { QuizQuestion, QuizFolder, StudyProfile } from '../types';
 import LoadingFish from './LoadingFish';
@@ -81,7 +82,7 @@ const TDHQuestoes: React.FC<TDHQuestoesProps> = ({ onBack, onSaveToNotebook, fol
         }
         
         console.log('Gerando questões:', { topic, numQuestions, studyProfile });
-        const result = await generateExamQuestions(topic, numQuestions, studyProfile);
+        const result = await generateExamQuestionsHybrid(topic, numQuestions, studyProfile);
         console.log('Resultado da API:', result);
         
         if (!result || !result.questions || result.questions.length === 0) {
